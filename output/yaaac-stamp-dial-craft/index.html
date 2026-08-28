@@ -59,16 +59,16 @@ svg{max-width:100%}
   padding:20px 20px 0;
   font-family:var(--maru);font-weight:700;color:var(--ink);
 }
-/* 主催ロゴ（I-14）。**クラフト紙の地に直に載せない。**
-   ロゴの「もしも」は青→緑のグラデーションで、緑寄りの側が地（#F0CC9C）とほぼ同化する。
-   白い札に載せて分離する。jpg フォールバックの地も白なので、札の色と揃う */
-.logo{display:block;background:#fff;border:1.5px solid rgba(0,64,79,.55);
-  border-radius:10px;padding:10px 12px;text-decoration:none;
+/* 主催ロゴ（I-14）。**背景を敷かず、紙に直に載せる**
+   （施主 2026-08-28「ロゴが透過されていないので透過処理をおこなって」）。
+   上下の余白は見た目のためではなく、たたく領域を 44px 以上にするために残している
+   （透過なので余白は見えない）。フォールバックは jpg ではなく png（jpg は透過を持てない） */
+.logo{display:block;padding:10px 0;text-decoration:none;
   transition:transform .2s cubic-bezier(.2,.7,.3,1),opacity .2s linear}
 .logo img{display:block;width:100%;height:auto}
 .logo:hover,.logo:focus-visible{transform:translateY(-2px);opacity:.92}
 .logo:focus-visible{outline:3px solid var(--green-fill);outline-offset:3px}
-/* 幅から実寸が決まる（比 3.74）。天は 108/3.74+20 ≒ 49px で、操作領域 44px を満たす */
+/* 幅から実寸が決まる（比 3.74）。天は 132/3.74+20 ≒ 55px で、操作領域 44px を満たす */
 .topmark .logo{width:132px}
 footer .logo{width:176px;margin:26px 0 0}
 
@@ -278,7 +278,7 @@ footer{max-width:900px;margin:clamp(46px,8vw,84px) auto 0;
   <a class="logo" href="https://yamanashifund.org/" target="_blank" rel="noopener noreferrer">
     <picture>
       <source type="image/webp" srcset="assets/logo-yamanashi-moshimo-200.webp 200w, assets/logo-yamanashi-moshimo-400.webp 400w" sizes="132px">
-      <img src="assets/logo-yamanashi-moshimo.jpg" width="1380" height="369" alt="山梨もしも財団" loading="eager" fetchpriority="high" decoding="async">
+      <img src="assets/logo-yamanashi-moshimo.png" width="1380" height="369" alt="山梨もしも財団" loading="eager" fetchpriority="high" decoding="async">
     </picture><span class="sr">（外部サイト・新しいタブで開きます）</span>
   </a>
 </header>
@@ -447,7 +447,7 @@ footer{max-width:900px;margin:clamp(46px,8vw,84px) auto 0;
   <a class="logo" href="https://yamanashifund.org/" target="_blank" rel="noopener noreferrer">
     <picture>
       <source type="image/webp" srcset="assets/logo-yamanashi-moshimo-200.webp 200w, assets/logo-yamanashi-moshimo-400.webp 400w" sizes="176px">
-      <img src="assets/logo-yamanashi-moshimo.jpg" width="1380" height="369" alt="山梨もしも財団" loading="lazy" decoding="async">
+      <img src="assets/logo-yamanashi-moshimo.png" width="1380" height="369" alt="山梨もしも財団" loading="lazy" decoding="async">
     </picture><span class="sr">（外部サイト・新しいタブで開きます）</span>
   </a>
 </footer>
