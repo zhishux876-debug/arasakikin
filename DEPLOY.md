@@ -13,7 +13,7 @@ output/<案件名>/DESIGN.md  の  canonical: yes     ← ここだけが宣言
         ↓
 scripts/publish_target.py  が読んで _site/ を組み立てる
         ↓
-GitHub Pages / Netlify が _site/ を配る
+GitHub Pages が _site/ を配る
 ```
 
 固定のディレクトリを配信設定に書くと、案を変えるたびに DESIGN.md と設定の両方を
@@ -44,33 +44,70 @@ GitHub Pages / Netlify が _site/ を配る
 `verify.py` はブラウザを入れるぶん遅い。それでも外さない
 （`CLAUDE.md` 原則3「ここを飛ばした案は納品しない」）。
 
+## 配信リポジトリは別に立ててある（2026-08-28）
+
+**この工房リポジトリを直接 push しない。**
+
+配信先 `https://github.com/zhishux876-debug/arasakikin` は **public** で、
+工房には施主提供の写真（`assets/30kikin/` の20点。YAAAC 名義での使用可否が未確認）、
+他案件の成果物、参照サイトの実測、採否の記録が入っている。
+**git の履歴に一度でも載せると取り消せない**ので、配信に必要なものだけを
+別リポジトリへ新しい履歴で出している。
+
+```
+C:\Users\zhish\lp-factory        工房（ローカルのまま。push しない）
+        │  scripts\sync_publish.py   ← ホワイトリストに書いたファイルだけを一方通行でコピー
+        ▼
+C:\Users\zhish\arasakikin-publish 配信リポジトリ（public・push する）
+```
+
+更新するときは工房で直してから:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\sync_publish.py           # 何が出るか見るだけ
+.\.venv\Scripts\python.exe scripts\sync_publish.py --push    # 同期して commit & push
+```
+
+- **ホワイトリスト方式**。除外リスト方式だと、新しく増えたファイルが既定で公開側へ漏れる。
+  出すものが増えたら `scripts/sync_publish.py` の `WHITELIST` に書き足す
+- **配信リポジトリ側を編集しない。** 直しても工房に戻らず、次の同期で上書きされる
+- コミットの著者は `zhishux876-debug@users.noreply.github.com`。
+  公開リポジトリに業務用メールを残さないため
+
 ## 人がやること（1回だけ）
 
-このリポジトリには**まだリモートがない**（`git remote -v` が空）。次を人間が実行する。
+以下は 2026-08-28 に実施済み（`arasakikin-publish` からの初回 push まで）。
+別の案件で同じことをするときの手順として残す。
 
 ### A. GitHub Pages で出す場合
 
-1. GitHub で空のリポジトリを作る（**private でよい。Pages は public でも private でも設定できる**）
+1. GitHub で空のリポジトリを作る。**無料プランで Pages を使うなら public にする**
+   （private からの Pages は Pro 以上）。public にする以上、**何を push するかを絞る**必要がある
+   — その仕組みが下の `sync_publish.py`
 2. リモートを繋いで push する
 
    ```powershell
    git remote add origin https://github.com/<アカウント>/<リポジトリ>.git
-   git push -u origin master
+   git push -u origin main
    ```
 
 3. リポジトリの **Settings → Pages → Source を「GitHub Actions」** にする
-4. 以後、`master` に push するたびに `publish.yml` が走る
+4. 以後、`main` に push するたびに `publish.yml` が走る
 
-### B. Netlify を Git 連携で使う場合
+### B. Netlify — **使わない**（2026-08-28 施主の判断「netlify は一旦よくて Git だけで公開させて」）
 
-1. 同じく GitHub にリポジトリを作って push する
-2. Netlify で **Add new site → Import an existing project** からそのリポジトリを選ぶ
-3. ビルド設定は `netlify.toml`（リポジトリ直下）が持っているので、**画面では何も入力しない**
-   - build command: `python3 scripts/publish_target.py --build _site`
-   - publish directory: `_site`
-4. 以後、push するたびに Netlify がビルドして配る
+`netlify.toml` は削除した。**配信経路は GitHub Pages の1本だけ。**
+2つ有効にすると同じ内容が2つの URL で出て、どちらが本物か分からなくなる。
 
-**AとBを同時に有効にしない。** 同じ内容が2つのURLで出て、どちらが本物か分からなくなる。
+戻したくなったときに要るのは設定ファイルだけで、仕組みは変えなくてよい。
+`scripts/publish_target.py` は配信先を知らない（`canonical: yes` から `_site/` を作るだけ）ので、
+リポジトリ直下に次の3行を置けば Netlify の Git 連携でそのまま動く。
+
+```toml
+[build]
+  command = "python3 scripts/publish_target.py --build _site"
+  publish = "_site"
+```
 
 ## ヘッダ（CSP・noindex）の扱い
 
@@ -82,10 +119,11 @@ GitHub Pages / Netlify が _site/ を配る
 
 手で書くと案を差し替えたときに食い違い、**ページが真っ白になるか、逆に緩い CSP のまま出る。**
 
-> **GitHub Pages はレスポンスヘッダを設定できない。** `_headers` は Netlify でだけ効く。
-> Pages で出すあいだ、CSP と `X-Frame-Options` は**掛からない**。
-> `noindex` は生成される `robots.txt` が受け持つ（ヘッダの `X-Robots-Tag` は効かない）。
-> ヘッダまで要るなら B（Netlify）を選ぶ。
+> **GitHub Pages はレスポンスヘッダを設定できない。** 生成した `_headers` は Pages では読まれない。
+> したがって **CSP と `X-Frame-Options` は掛からない**（Pages の制約であって、この案の欠陥ではない）。
+> `noindex` は生成される `robots.txt` が受け持つので、そちらは効く。
+> **それでも `_headers` を作り続ける**のは、配信先を替えたときに手で書き直さないため。
+> このページは入力欄も外部スクリプトも持たないので、ヘッダが無いことの実害は小さい。
 
 `noindex` は `DESIGN.md` の `status` に「承認済」が入るまで自動で付く。
 **施主が承認する前に検索結果へ出ない。**
@@ -95,9 +133,13 @@ GitHub Pages / Netlify が _site/ を配る
 | 項目 | 決定 |
 | :--- | :--- |
 | 公開する案 | **`output/yaaac-stamp-dial-craft`（クラフト紙案）**。山吹案は `canonical: no` にし、公開設定を外した |
-| 配信先 | **GitHub Pages**（A）。Netlify（B）の設定はリポジトリ直下に残してあるが、繋いでいない |
+| 配信先 | **GitHub Pages だけ**。Netlify は使わない（2026-08-28「netlify は一旦よくて Git だけで公開させて」）。`netlify.toml` は削除済み |
 
-**まだリモートが無いので、上の「人がやること」A を実行するまで配信は始まらない。**
+**残っているのは A-3 だけ。** 初回 push は済んでおり、GitHub の runner 上で
+ctrl_char / design_spec / canonical-audit / interface_lint / verify.py（実機 Chromium・
+確定コピー60件照合）まで全部 success、`deploy-pages` だけが失敗している。
+**原因はリポジトリの Pages が未有効**（Pages API が 404）。
+Settings → Pages → Source を「GitHub Actions」にして、失敗した実行を Re-run すれば出る。
 
 ### 検索結果に出す（noindex を外す）とき
 
@@ -113,6 +155,6 @@ GitHub Pages / Netlify が _site/ を配る
 
 ## まだ決まっていないこと
 
-- 独自ドメインを使うか（使うなら Pages は `CNAME`、Netlify は管理画面で設定）
+- 独自ドメインを使うか（使うなら `CNAME` を配信リポジトリの直下に置く）
 - OGP 画像（`og:image`）。**公開 URL が決まってからでないと絶対 URL にできない**
   （`briefs/yaaac.md` の TODO）
