@@ -50,24 +50,31 @@ body{
 svg{max-width:100%}
 
 /* ---------- 主催表記（紙面の天） ---------- */
+/* ロゴは紙の左上に留める（施主 2026-08-28「ひだりうえこていでいいよ」）。
+   **ここだけ --gut を使わない。** --gut は 5vw を含むので、窓幅を変えるとロゴが横に動く。
+   左上を動かさないことが要件なので、固定値で留める */
 .topmark{
-  max-width:780px;margin:0 auto;
+  max-width:none;margin:0;
   display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;
-  padding:clamp(14px,2vw,24px) var(--gut) 0;
+  padding:20px 20px 0;
   font-family:var(--maru);font-weight:700;color:var(--ink);
 }
 /* 主催ロゴ（I-14）。**クラフト紙の地に直に載せない。**
    ロゴの「もしも」は青→緑のグラデーションで、緑寄りの側が地（#F0CC9C）とほぼ同化する。
    白い札に載せて分離する。jpg フォールバックの地も白なので、札の色と揃う */
 .logo{display:block;background:#fff;border:1.5px solid rgba(0,64,79,.55);
-  border-radius:10px;padding:8px 12px}
+  border-radius:10px;padding:10px 12px;text-decoration:none;
+  transition:transform .2s cubic-bezier(.2,.7,.3,1),opacity .2s linear}
 .logo img{display:block;width:100%;height:auto}
+.logo:hover,.logo:focus-visible{transform:translateY(-2px);opacity:.92}
+.logo:focus-visible{outline:3px solid var(--green-fill);outline-offset:3px}
+/* 幅から実寸が決まる（比 3.74）。天は 108/3.74+20 ≒ 49px で、操作領域 44px を満たす */
 .topmark .logo{width:132px}
 footer .logo{width:176px;margin:26px 0 0}
 
 /* ---------- ヒーロー（1画面の構成。左に版と見出し／右に日程） ---------- */
 .hero{max-width:1160px;margin:0 auto;padding:clamp(2px,.6vw,8px) var(--gut) 0;
-  display:grid;grid-template-columns:1fr;gap:clamp(20px,3vw,30px)}
+  display:grid;grid-template-columns:1fr;gap:clamp(32px,5vw,36px)}
 @media(min-width:940px){
   .hero{grid-template-columns:minmax(0,1.3fr) minmax(292px,.86fr);
     gap:clamp(30px,3.8vw,60px);align-items:start}
@@ -79,7 +86,16 @@ footer .logo{width:176px;margin:26px 0 0}
 h1{margin:0;font-family:var(--kaku);font-weight:900;color:var(--ink);
   font-size:clamp(31px,7.6vw,68px);line-height:1.26;letter-spacing:-.02em}
 h1 span{display:inline-block}
-.lead{margin:0;font-size:clamp(14.5px,3.3vw,17px);color:var(--ink-soft);max-width:24em}
+/* ヒーローの4項目（施主支給）。**ここは枠を使わない**（I-13: 天とヒーローは線で区切る）。
+   1項目ずつ細い罫で切り、最後だけ引かない */
+.lead{margin:0;padding:0;list-style:none;max-width:26em;
+  font-family:var(--maru);font-weight:700;
+  font-size:clamp(13.5px,3.2vw,16px);line-height:1.65;color:var(--ink)}
+/* 破線にするのは、縦積みのとき直下の頭字語（実線・緑）と地続きに見えるため。
+   線の種類で「別の塊」だと分かるようにする */
+.lead li{padding:.5em 0;border-bottom:1.5px dashed rgba(0,64,79,.3)}
+.lead li:last-child{border-bottom:0;padding-bottom:0}
+.lead li span{display:inline-block}
 .hero-meta{display:flex;align-items:center;gap:clamp(14px,2.4vw,26px);flex-wrap:wrap;
   margin:clamp(20px,3vw,34px) 0 0;padding-top:clamp(16px,2.4vw,26px);
   border-top:2.5px solid var(--ink)}
@@ -259,10 +275,12 @@ footer{max-width:900px;margin:clamp(46px,8vw,84px) auto 0;
 <div class="sheet">
 
 <header class="topmark">
-  <picture class="logo">
-    <source type="image/webp" srcset="assets/logo-yamanashi-moshimo-200.webp 200w, assets/logo-yamanashi-moshimo-400.webp 400w" sizes="132px">
-    <img src="assets/logo-yamanashi-moshimo.jpg" width="1380" height="369" alt="山梨もしも財団" loading="eager" fetchpriority="high" decoding="async">
-  </picture>
+  <a class="logo" href="https://yamanashifund.org/" target="_blank" rel="noopener noreferrer">
+    <picture>
+      <source type="image/webp" srcset="assets/logo-yamanashi-moshimo-200.webp 200w, assets/logo-yamanashi-moshimo-400.webp 400w" sizes="132px">
+      <img src="assets/logo-yamanashi-moshimo.jpg" width="1380" height="369" alt="山梨もしも財団" loading="eager" fetchpriority="high" decoding="async">
+    </picture><span class="sr">（外部サイト・新しいタブで開きます）</span>
+  </a>
 </header>
 
 <main>
@@ -271,7 +289,12 @@ footer{max-width:900px;margin:clamp(46px,8vw,84px) auto 0;
       <p class="name">山梨アラサーアクションアイデアコンテスト（YAAAC）</p>
       <h1><span>アラサーって</span><span>ちょうどいい</span><span>スタートライン。</span></h1>
       <div class="hero-meta">
-        <p class="lead">あなたのやってみたいアイデアを募集します</p>
+        <ul class="lead">
+          <li>山梨に暮らすアラサー世代対象</li>
+          <li><span>テーマは</span><span>「新たな1歩」</span></li>
+          <li><span>採択されたアイデアには</span><span>実現のための助成金30万円交付</span></li>
+          <li><span>活動期間は</span><span>11月の30日間限定</span></li>
+        </ul>
       </div>
     </div>
 
@@ -353,7 +376,7 @@ footer{max-width:900px;margin:clamp(46px,8vw,84px) auto 0;
 
     <div class="block card">
       <h3>こんなアクションが対象</h3>
-      <p>起業でなくてかまいません。立ち止まること、向き合うこと、選び直すことも、このコンテストの対象です。</p>
+      <p><span>2026年11月1日〜11月30日の1ヶ月。</span><span>30万円の活動資金を使って、「新たな1歩」を踏み出すアクションアイデアが対象です。</span></p>
       <ul class="plain">
         <li>あの国にいる友人に会いに行って１ヶ月暮らしてみる</li>
         <li>日本を車で一周してみる</li>
@@ -421,10 +444,12 @@ footer{max-width:900px;margin:clamp(46px,8vw,84px) auto 0;
       <p class="foot-val"><a href="mailto:info@yamanashifund.org">info@yamanashifund.org</a></p>
     </div>
   </div>
-  <picture class="logo">
-    <source type="image/webp" srcset="assets/logo-yamanashi-moshimo-200.webp 200w, assets/logo-yamanashi-moshimo-400.webp 400w" sizes="176px">
-    <img src="assets/logo-yamanashi-moshimo.jpg" width="1380" height="369" alt="山梨もしも財団" loading="lazy" decoding="async">
-  </picture>
+  <a class="logo" href="https://yamanashifund.org/" target="_blank" rel="noopener noreferrer">
+    <picture>
+      <source type="image/webp" srcset="assets/logo-yamanashi-moshimo-200.webp 200w, assets/logo-yamanashi-moshimo-400.webp 400w" sizes="176px">
+      <img src="assets/logo-yamanashi-moshimo.jpg" width="1380" height="369" alt="山梨もしも財団" loading="lazy" decoding="async">
+    </picture><span class="sr">（外部サイト・新しいタブで開きます）</span>
+  </a>
 </footer>
 
 <!-- 常時右下のエントリー導線（I-15）。DOM の最後に置き、タブ順の最後にする -->
