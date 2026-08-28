@@ -1,0 +1,22 @@
+# リポジトリ全体の配信設定（Netlify を Git 連携で使う場合）。
+#
+# **案件ディレクトリの netlify.toml とは役割が違う。**
+# `output/<案件名>/netlify.toml` は「その案を手でドラッグ&ドロップして出す」ための設定で、
+# `design_spec_lint.py --canonical-audit` が「案件で1つだけ」と数える対象。
+# こちらはリポジトリの根にあり、案件ディレクトリではないので数えられない。
+#
+# 配信するディレクトリをここに固定で書かないのが要点。書くと、公開する案を変えるたびに
+# このファイルと DESIGN.md の両方を直すことになり、必ず食い違う。
+# 実際に出す案は scripts/publish_target.py が `canonical: yes` から解決する。
+#
+# canonical: yes がまだ無いあいだ、このビルドは exit 2 で止まる。**それが正しい**
+# （公開する案が決まっていないのに何かを配信しない）。
+
+[build]
+  command = "python3 scripts/publish_target.py --build _site"
+  publish = "_site"
+
+# ヘッダ（CSP・noindex・キャッシュ）は _site/_headers に生成される。
+# **CSP の script-src は、その案の実物から sha256 を計算して書かれる。**
+# 案によってインライン JS の有無が違うため、手で書くと差し替えたときに食い違う
+# （クラフト案は3章の開閉に JS を1つ持ち、山吹案は JS ゼロ）。

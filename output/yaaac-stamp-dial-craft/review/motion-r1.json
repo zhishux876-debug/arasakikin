@@ -1,0 +1,97 @@
+[
+  {
+    "html": "output\\yaaac-stamp-dial-craft\\index.html",
+    "axes": [
+      {
+        "axis": "motion_applied",
+        "value": 1.0,
+        "band": [
+          1,
+          1
+        ],
+        "status": "PASS",
+        "source": "書いたアニメーションが1つも画面に出ていない。IntersectionObserver が発火しない・view() が効いていないなど「書いたのに動いていない」事故を捕まえる",
+        "detail": "書かれた動き 0件 / 開幕の実変化 5.36 / 最大の実変化 0.1"
+      },
+      {
+        "axis": "impact_change",
+        "value": 0.1,
+        "band": [
+          12,
+          9999
+        ],
+        "status": "FAIL",
+        "source": "画面が最も大きく変わる場面の変化量。参照実測は mikimoto 137.4 / playdate 49.2 / pudding love-story 23.3、既定の下限はその最小の半分。静止で成立させる設計は契約に `- Metric exception: impact_change — <理由>` を書く",
+        "detail": "停止位置の変化 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0] / スクロール残差 [0.1, 0.09, 0.09, 0.08, 0.06, 0.05]"
+      },
+      {
+        "axis": "scroll_change",
+        "value": 0.08,
+        "band": [
+          0,
+          9999
+        ],
+        "status": "PASS",
+        "source": "60px スクロールあたりの変化量の中央値。参照実測 mikimoto 20.6 / love-story 21.9 / playdate 0（止めて成立させる型）。下限は置かない。impact_change と合わせて読む",
+        "detail": "60px スクロールあたりの変化量の中央値"
+      },
+      {
+        "axis": "reduced_motion_stopped",
+        "value": 1.0,
+        "band": [
+          1,
+          1
+        ],
+        "status": "PASS",
+        "source": "CLAUDE.md prefers-reduced-motion: reduce で全アニメーションを無効化する",
+        "detail": "全て停止"
+      },
+      {
+        "axis": "non_composited_props",
+        "value": 0.0,
+        "band": [
+          0,
+          0
+        ],
+        "status": "PASS",
+        "source": "CLAUDE.md / motion.md 6節 transform と opacity 以外を毎フレーム動かさない",
+        "detail": "transform と opacity のみ"
+      }
+    ],
+    "impact": {
+      "opening_change": 5.36,
+      "opening_moved": true,
+      "stop_changes": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scrub_residuals": [
+        0.1,
+        0.09,
+        0.09,
+        0.08,
+        0.06,
+        0.05
+      ],
+      "impact_change": 0.1,
+      "scroll_change": 0.08,
+      "unscrollable_positions": 0
+    },
+    "detail": {
+      "load_animations": [],
+      "revealed_on_scroll": [],
+      "scroll_timeline_animations": 0,
+      "sticky_changing": 0,
+      "reduced_motion_still_running": [],
+      "implemented_motion_ids": [],
+      "contract_value_mismatches": [],
+      "unlabelled_animations": [],
+      "undeclared_motions": []
+    },
+    "verdict": "FAIL"
+  }
+]

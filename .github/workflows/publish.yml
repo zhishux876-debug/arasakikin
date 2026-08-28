@@ -1,0 +1,114 @@
+# 公開する案を GitHub Pages へ配信する。
+#
+# **どの案を配信するかは、このファイルに書かれていない。**
+# `output/<案件名>/DESIGN.md` の `canonical: yes` が唯一の宣言で、
+# scripts/publish_target.py がそれを読む（決定の在りかを2箇所に増やさないため）。
+#
+# canonical: yes がまだ無いあいだは、このワークフローは**配信せずに終わる**。
+# 「公開する案を決める」のは人間の仕事で、CI の仕事ではない（CLAUDE.md Decision Authority）。
+name: publish
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.resolve.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 潰れた制御文字は他のすべての検査を黙って無効化するので最初に見る
+      # （CLAUDE.md「検査器を信じる前に確かめること」4）
+      - name: Gate -2 制御文字
+        run: python scripts/ctrl_char_lint.py
+
+      - name: 公開する案を解決する
+        id: resolve
+        run: |
+          set +e
+          python scripts/publish_target.py --github-output "$GITHUB_OUTPUT"
+          code=$?
+          set -e
+          if [ "$code" = "2" ]; then
+            echo "ready=no" >> "$GITHUB_OUTPUT"
+            echo "::notice::公開する案が未決（canonical: yes が無い）。配信せずに終了する"
+            exit 0
+          fi
+          [ "$code" = "0" ] || exit "$code"
+          echo "ready=yes" >> "$GITHUB_OUTPUT"
+
+      - name: Gate 1.5 意匠の正本との照合
+        if: steps.resolve.outputs.ready == 'yes'
+        run: python scripts/design_spec_lint.py "${{ steps.resolve.outputs.target }}"
+
+      - name: Gate 1.6 公開してよい案は1つか
+        if: steps.resolve.outputs.ready == 'yes'
+        run: python scripts/design_spec_lint.py --canonical-audit
+
+      - name: Gate 3 インターフェース規約（ソースの静的検査）
+        if: steps.resolve.outputs.ready == 'yes'
+        run: python scripts/interface_lint.py "${{ steps.resolve.outputs.target }}"
+
+      # ここまでは「どう書かれているか」。**実際にどう描かれるか**は verify.py にしか見えない。
+      # ブラウザを入れるぶん遅いが、ここを飛ばした案は納品しない（CLAUDE.md 原則3）
+      - name: Gate 1 実機検証の支度
+        if: steps.resolve.outputs.ready == 'yes'
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Gate 1 実機検証（LP 本体・確定コピー照合つき）
+        if: steps.resolve.outputs.ready == 'yes'
+        run: |
+          if [ -n "${{ steps.resolve.outputs.brief }}" ]; then
+            python scripts/verify.py "${{ steps.resolve.outputs.target }}/index.html" \
+              --fixed "${{ steps.resolve.outputs.brief }}"
+          else
+            echo "::warning::文言の正本が見つからないため、確定コピー照合なしで検証する"
+            python scripts/verify.py "${{ steps.resolve.outputs.target }}/index.html"
+          fi
+
+      # 404 は LP ではないので --fixed を当てない。
+      # 当てると「確定コピー60件が無い」と必ず落ちる（器が違うものに同じ物差しを当てない）
+      - name: Gate 1 実機検証（404）
+        if: steps.resolve.outputs.ready == 'yes'
+        run: |
+          f="${{ steps.resolve.outputs.target }}/404.html"
+          if [ -f "$f" ]; then python scripts/verify.py "$f"; else echo "404.html は無い"; fi
+
+      - name: 配信物を組み立てる
+        if: steps.resolve.outputs.ready == 'yes'
+        run: python scripts/publish_target.py --build _site
+
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.resolve.outputs.ready == 'yes'
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.ready == 'yes'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

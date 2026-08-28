@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ページが見つかりません｜YAAAC</title>
+<meta name="description" content="お探しのページは見つかりませんでした。山梨アラサーアクションアイデアコンテスト（YAAAC）のトップへ戻れます。">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F0CC9C">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="YAAAC">
+<meta property="og:title" content="ページが見つかりません｜YAAAC">
+<meta property="og:description" content="お探しのページは見つかりませんでした。山梨アラサーアクションアイデアコンテスト（YAAAC）のトップへ戻れます。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@700;900&family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F0CC9C;
+  --paper-lt:#F7DFB4;
+  --paper-dk:#E4C08A;
+  --ink:#00404F;
+  --ink-soft:#0C5460;
+  --green-fill:#187830;
+  --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN","BIZ UDPGothic",sans-serif;
+  --kaku:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{overflow-x:clip;-webkit-text-size-adjust:100%}
+body{
+  min-height:100vh;display:grid;place-content:center;
+  padding:clamp(24px,6vw,64px);
+  background:var(--paper);
+  background-image:radial-gradient(120% 80% at 20% 0%,var(--paper-lt) 0%,var(--paper) 55%,var(--paper-dk) 100%);
+  color:var(--ink);font-family:var(--kaku);font-size:16px;line-height:1.9;
+}
+.card{
+  max-width:34em;
+  border:2.5px solid var(--ink);border-radius:18px;
+  background:rgba(247,225,183,.55);
+  box-shadow:3px 3px 0 rgba(0,64,79,.14);
+  padding:clamp(22px,4vw,36px);
+}
+.code{font-family:var(--maru);font-weight:900;font-size:12px;letter-spacing:.34em;
+  color:var(--ink);margin:0 0 1.1em;display:inline-block;
+  border:2px solid var(--ink);border-radius:999px;padding:.34em .5em .34em 1.1em;
+  background:rgba(247,225,183,.5)}
+h1{margin:0 0 .6em;padding:0 0 .4em;font-family:var(--kaku);font-weight:900;
+  font-size:clamp(22px,5.2vw,34px);line-height:1.4;border-bottom:2.5px solid var(--ink)}
+h1 span{display:inline-block}
+p{margin:0 0 1.4em;color:var(--ink-soft);font-size:clamp(14.5px,3.3vw,16.5px)}
+a.cta{
+  display:inline-flex;width:fit-content;align-items:center;justify-content:center;gap:.6em;
+  min-height:60px;padding:0 1.9em;border-radius:999px;
+  background:var(--ink);color:var(--paper-lt);text-decoration:none;
+  font-family:var(--maru);font-weight:900;font-size:clamp(16px,3.6vw,19px);letter-spacing:.06em;
+  transition:transform .22s cubic-bezier(.2,.7,.3,1),opacity .22s linear;
+}
+a.cta:hover,a.cta:focus-visible{transform:translateY(-3px);opacity:.92}
+a.cta:focus-visible{outline:3px solid var(--green-fill);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
+    transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<main class="card">
+  <p class="code">404</p>
+  <h1><span>ページが</span><span>見つかりませんでした。</span></h1>
+  <p>お探しのページは、移動したか削除された可能性があります。募集要項とエントリー方法はトップページにあります。</p>
+  <a class="cta" href="/">トップへ戻る<span aria-hidden="true">→</span></a>
+</main>
+</body>
+</html>

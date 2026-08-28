@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YAAAC｜山梨アラサーアクションアイデアコンテスト</title>
+<meta name="description" content="アラサーってちょうどいいスタートライン。山梨アラサーアクションアイデアコンテスト（YAAAC）。25〜34歳が対象。募集期間 9.1火 → 9.30水、採択者決定 10月下旬。主催はアラサー基金。">
+<meta name="theme-color" content="#F0CC9C">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="YAAAC">
+<meta property="og:title" content="YAAAC｜山梨アラサーアクションアイデアコンテスト">
+<meta property="og:description" content="アラサーってちょうどいいスタートライン。25〜34歳が対象。募集期間 9.1火 → 9.30水。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F0CC9C;
+  --paper-lt:#F7DFB4;
+  --paper-dk:#E4C08A;
+  --cream:#F7E1B7;
+  --ink:#00404F;
+  --ink-soft:#0C5460;
+  --green:#14682A;
+  --green-fill:#187830;
+  --maru:"Zen Maru Gothic","Hiragino Maru Gothic ProN","BIZ UDPGothic",sans-serif;
+  --kaku:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  --gut:clamp(20px,5vw,64px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{overflow-x:clip;-webkit-text-size-adjust:100%;
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif}
+body{
+  background:var(--paper);
+  background-image:radial-gradient(120% 80% at 20% 0%,var(--paper-lt) 0%,var(--paper) 55%,var(--paper-dk) 100%);
+  color:var(--ink);
+  font-family:var(--kaku);
+  font-size:16px;
+  line-height:1.9;
+  overflow-x:clip;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:rgba(0,64,79,.18);
+}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip-path:inset(50%);white-space:nowrap;border:0}
+.grain{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.5}
+.sheet{position:relative;z-index:1}
+svg{max-width:100%}
+
+/* ---------- 主催表記（紙面の天） ---------- */
+.topmark{
+  max-width:780px;margin:0 auto;
+  display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;
+  padding:clamp(14px,2vw,24px) var(--gut) 0;
+  font-family:var(--maru);font-weight:700;color:var(--ink);
+}
+.topmark .org{font-size:11.5px;letter-spacing:.3em;line-height:1.95}
+.topmark .org span{display:block}
+.topmark .jp{font-size:14px;letter-spacing:.2em}
+
+/* ---------- ヒーロー（1画面の構成。左に版と見出し／右に日程） ---------- */
+.hero{max-width:1160px;margin:0 auto;padding:clamp(2px,.6vw,8px) var(--gut) 0;
+  display:grid;grid-template-columns:1fr;gap:clamp(20px,3vw,30px)}
+@media(min-width:940px){
+  .hero{grid-template-columns:minmax(0,1.3fr) minmax(292px,.86fr);
+    gap:clamp(30px,3.8vw,60px);align-items:start}
+}
+.hero-main{min-width:0}
+
+.name{margin:clamp(10px,1.6vw,20px) 0 .55em;font-family:var(--maru);font-weight:700;color:var(--green);
+  font-size:clamp(12px,2.8vw,15px);letter-spacing:.08em;line-height:1.7}
+h1{margin:0;font-family:var(--kaku);font-weight:900;color:var(--ink);
+  font-size:clamp(31px,7.6vw,68px);line-height:1.26;letter-spacing:-.02em}
+h1 span{display:inline-block}
+.lead{margin:0;font-size:clamp(14.5px,3.3vw,17px);color:var(--ink-soft);max-width:24em}
+.hero-meta{display:flex;align-items:center;gap:clamp(14px,2.4vw,26px);flex-wrap:wrap;
+  margin:clamp(20px,3vw,34px) 0 0;padding-top:clamp(16px,2.4vw,26px);
+  border-top:2.5px solid var(--ink)}
+.h3row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 .9em;
+  padding:0 0 .45em;border-bottom:2px solid rgba(0,64,79,.25)}
+.h3row h3{margin:0;padding:0;border-bottom:0}
+.age{font-family:var(--maru);font-weight:900;color:var(--ink);
+  font-size:clamp(13px,2.9vw,16px);letter-spacing:.02em;white-space:nowrap;
+  border:2px solid var(--ink);border-radius:999px;padding:.2em .85em}
+
+/* 右の帯（縦読みのマーク → 日程 → CTA） */
+.rail{min-width:0;display:grid;gap:clamp(18px,2.2vw,26px);align-content:start}
+@media(min-width:940px){
+  .rail{border-left:2px solid rgba(0,64,79,.22);padding-left:clamp(24px,2.8vw,44px)}
+}
+.mark{display:grid;gap:1px}
+.mark .acr{display:grid;grid-template-columns:1.25em 1fr;align-items:baseline;gap:.55em;
+  border-bottom:1.5px solid rgba(20,104,42,.3);padding:.3em 0}
+.mark b{font-family:var(--maru);font-weight:900;color:var(--green);
+  font-size:clamp(24px,5.6vw,36px);line-height:1.05}
+.mark .acr span{font-family:var(--maru);font-weight:700;color:var(--green);
+  font-size:clamp(13px,3vw,16px);letter-spacing:.06em;white-space:nowrap}
+
+.sched{margin:0;display:grid;gap:clamp(16px,2vw,24px)}
+.sched .row{display:grid;gap:.25em;border-top:2.5px solid var(--ink);padding-top:.7em}
+.sched dt{display:flex;align-items:center;gap:.7em;flex-wrap:wrap;
+  font-family:var(--maru);font-weight:700;font-size:clamp(11.5px,2.6vw,13px);
+  letter-spacing:.22em;color:var(--ink-soft)}
+.sched dt .yr{font-size:.95em;letter-spacing:.12em;color:var(--ink)}
+.sched dd{margin:0;font-family:var(--maru);font-weight:900;color:var(--ink);
+  font-size:clamp(23px,5.6vw,33px);line-height:1.2;letter-spacing:-.01em}
+
+/* ---------- CTA ---------- */
+.cta{
+  display:inline-flex;width:fit-content;align-items:center;justify-content:center;gap:.6em;
+  min-height:60px;padding:0 1.9em;border-radius:999px;
+  background:var(--ink);color:var(--paper-lt);text-decoration:none;
+  font-family:var(--maru);font-weight:900;font-size:clamp(16px,3.6vw,19px);letter-spacing:.06em;
+  transition:transform .22s cubic-bezier(.2,.7,.3,1),opacity .22s linear;
+}
+.cta:hover,.cta:focus-visible{transform:translateY(-3px);opacity:.92}
+.cta:focus-visible{outline:3px solid var(--green-fill);outline-offset:3px}
+.cta .arrow{font-size:.9em}
+
+/* 右下に追従するエントリー導線（I-15）。
+   ヒーローの CTA が画面から出たら現れる。**既定は「出ている」**で、
+   JS が動いたときだけ引っ込める（JS が死んでも申し込み導線が消えない側に倒す）。
+   消し方に要素を「無いこと」にする指定を使わない（確定コピー照合が innerText を見るため） */
+.cta-fix{
+  position:fixed;z-index:5;
+  right:max(clamp(12px,3vw,28px),env(safe-area-inset-right));
+  bottom:max(clamp(12px,3vw,28px),env(safe-area-inset-bottom));
+  min-height:56px;padding:0 1.5em;
+  font-size:clamp(14.5px,3.4vw,17px);
+  border:2.5px solid var(--paper-lt);
+  box-shadow:0 4px 0 rgba(0,64,79,.22),0 10px 26px rgba(0,64,79,.26);
+}
+.cta-fix{transition:transform .2s cubic-bezier(.2,.7,.3,1),opacity .2s linear}
+.cta-fix:hover,.cta-fix:focus-visible{transform:translateY(-2px)}
+/* 引っ込んでいる状態。面積は残るが触れないし、読み上げからも外す（inert は JS が付ける） */
+.cta-fix.is-away{opacity:0;pointer-events:none;transform:translateY(10px)}
+
+/* ---------- 区画の共通 ---------- */
+section{scroll-margin-top:24px;max-width:900px;margin:0 auto;padding:clamp(40px,7vw,76px) var(--gut) 0}
+/* 区画の始まりは枠付きの札で立てる（I-13）。地に直置きの小さな字にしない */
+/* #about / #why では h2、#guidelines では p（そこは「募集要項」が h2）。
+   どの札も同じ高さに見えるよう line-height を明示する */
+.eyebrow{display:inline-block;font-family:var(--maru);font-weight:700;font-size:12px;
+  line-height:1.9;letter-spacing:.34em;color:var(--ink);margin:0 0 1.1em;
+  border:2px solid var(--ink);border-radius:999px;padding:.34em .5em .34em 1.1em;
+  background:rgba(247,225,183,.5)}
+/* 区画の見出しは全幅の罫を持つ。下に並ぶ枠が「その子」だと分かるようにする */
+h2{margin:0 0 1.1em;padding:0 0 .4em;font-family:var(--kaku);font-weight:900;color:var(--ink);
+  font-size:clamp(20px,4.8vw,31px);line-height:1.5;letter-spacing:.01em;
+  border-bottom:2.5px solid var(--ink)}
+h3{margin:0 0 .9em;padding:0 0 .45em;font-family:var(--maru);font-weight:900;color:var(--ink);
+  font-size:clamp(17px,4vw,22px);line-height:1.5;
+  border-bottom:2px solid rgba(0,64,79,.25)}
+p{margin:0 0 1.2em;max-width:34em}
+.intro{font-size:clamp(13.5px,3vw,15px);line-height:2.05;color:var(--ink);max-width:40em;margin:0}
+
+/* 枠（I-13）。#about 以降の区画の器。影は静止（動かすと reflow を伴う） */
+.card{
+  border:2.5px solid var(--ink);border-radius:18px;
+  background:rgba(247,225,183,.55);
+  box-shadow:3px 3px 0 rgba(0,64,79,.14);
+  padding:clamp(18px,3.4vw,30px) clamp(16px,3.2vw,30px);
+}
+.card>*:last-child{margin-bottom:0}
+/* 枠の中は行長を少し緩める（枠の右に大きな空きを残さない） */
+.card p{max-width:38em}
+/* 応募導線の枠だけ一段強くする（Quality Standards の優先順位1位） */
+#guidelines .block:last-of-type{border-width:3.5px;background:rgba(247,225,183,.8)}
+
+/* 3つのボタン */
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 20px}
+.tab{
+  min-height:52px;padding:0 1.35em;border-radius:999px;cursor:pointer;
+  border:2.5px solid var(--ink);background:transparent;color:var(--ink);
+  font-family:var(--maru);font-weight:900;font-size:clamp(14px,3.4vw,17px);letter-spacing:.04em;
+  transition:transform .2s cubic-bezier(.2,.7,.3,1),opacity .2s linear;
+}
+.tab[aria-expanded="true"]{background:var(--ink);color:var(--paper-lt)}
+.tab:hover{transform:translateY(-2px)}
+.tab:focus-visible{outline:3px solid var(--green-fill);outline-offset:3px}
+/* JS が無効なら全章ひらいたままにする（1章しか読めない状態を作らない）。
+   畳むのは JS が .tabs へ js-on を付けたあとだけ */
+.panel{max-height:none}
+.js-on .panel{max-height:0;overflow:hidden}
+.js-on .panel.open{max-height:none;overflow:visible}
+.panel-inner{margin:0 0 14px}
+.panel-inner p{font-size:clamp(14.5px,3.3vw,16.5px);line-height:2.05}
+.panel-inner p span{display:inline-block}
+.quiet{color:var(--ink-soft)}
+.words{display:flex;flex-wrap:wrap;gap:.3em 1em;margin:1.2em 0 1.4em;padding:0;list-style:none}
+.words li{font-family:var(--maru);font-weight:900;color:var(--green);
+  font-size:clamp(21px,5.6vw,34px);line-height:1.35;letter-spacing:.02em}
+.words li:nth-child(even){color:var(--ink)}
+.deeds{margin:1.2em 0 1.4em;padding:0;list-style:none;display:grid;gap:.4em}
+.deeds li{font-family:var(--maru);font-weight:700;color:var(--ink);
+  font-size:clamp(16.5px,4vw,23px);line-height:1.5;padding-left:1.1em;position:relative}
+.deeds li::before{content:"";position:absolute;left:0;top:.62em;width:.55em;height:.55em;
+  border-radius:999px;background:var(--green-fill);display:block}
+
+/* 募集要項 */
+.block{margin:0 0 clamp(18px,3vw,26px)}
+/* 箇条は行ごとに罫を引く（どこまでが1項目かを目で数えられるようにする・I-13） */
+.plain{margin:0;padding:0;list-style:none;display:grid;gap:0}
+.plain li{font-family:var(--maru);font-weight:700;font-size:clamp(15.5px,3.7vw,20px);
+  line-height:1.6;color:var(--ink);padding:.5em 0;
+  border-bottom:1.5px dashed rgba(0,64,79,.25)}
+.plain li:last-child{border-bottom:0;padding-bottom:0}
+.numbered{counter-reset:c;margin:0;padding:0;list-style:none;display:grid;gap:0}
+.numbered li{counter-increment:c;position:relative;padding:.5em 0 .5em 2.4em;
+  font-size:clamp(14.5px,3.4vw,17px);line-height:1.85;
+  border-bottom:1.5px solid rgba(0,64,79,.16)}
+.numbered li:last-child{border-bottom:0;padding-bottom:0}
+.numbered li::before{content:counter(c,decimal-leading-zero);position:absolute;left:0;top:.62em;
+  font-family:var(--maru);font-weight:900;font-size:.85em;color:var(--green);letter-spacing:.04em}
+.flow{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.flow li{border:2px solid rgba(0,64,79,.55);border-radius:12px;padding:13px 16px;
+  font-family:var(--maru);font-weight:700;font-size:clamp(15px,3.6vw,19px);
+  background:rgba(0,64,79,.05)}
+.note{font-size:13.5px;color:var(--ink-soft);margin:.9em 0 0}
+
+/* フッター */
+/* 下端は右下の常時CTA（.cta-fix）に隠れないだけの逃げ場を取る */
+footer{max-width:900px;margin:clamp(46px,8vw,84px) auto 0;
+  padding:26px var(--gut) calc(48px + clamp(64px,14vw,88px));border-top:2.5px solid var(--ink)}
+.foot-grid{display:grid;gap:24px;grid-template-columns:1fr}
+@media(min-width:620px){.foot-grid{grid-template-columns:1fr 1fr}}
+.foot-h{font-family:var(--maru);font-weight:900;font-size:clamp(17px,4vw,22px);letter-spacing:.14em;margin:0 0 .6em}
+.foot-label{font-family:var(--maru);font-weight:700;font-size:12px;letter-spacing:.2em;color:var(--ink-soft);margin:0 0 .35em}
+.foot-val{font-family:var(--maru);font-weight:700;font-size:clamp(15px,3.6vw,18px);margin:0 0 1.1em}
+.foot-val a{color:var(--ink);text-decoration:none;border-bottom:2px solid rgba(0,64,79,.35);
+  display:inline-block;min-height:44px;line-height:44px}
+.foot-val a:hover{border-bottom-color:var(--ink)}
+.foot-org{font-family:var(--maru);font-weight:700;font-size:13px;letter-spacing:.1em;color:var(--ink-soft);margin:26px 0 0}
+
+@media(max-width:700px){
+        }
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
+    transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<svg class="grain" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <filter id="paperGrain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="4" stitchTiles="stitch"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 0.55  0 0 0 0 0.42  0 0 0 0 0.26  0.34 0 0 0 -0.12"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#paperGrain)"></rect>
+</svg>
+
+<div class="sheet">
+
+<header class="topmark">
+  <span class="org"><span>アラサー基金</span></span>
+  <span class="jp">山梨</span>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-main">
+      <p class="name">山梨アラサーアクションアイデアコンテスト（YAAAC）</p>
+      <h1><span>アラサーって</span><span>ちょうどいい</span><span>スタートライン。</span></h1>
+      <div class="hero-meta">
+        <p class="lead">あなたのやってみたいアイデアを募集します</p>
+      </div>
+    </div>
+
+    <aside class="rail">
+      <div class="mark">
+        <div class="acr"><b>Y</b><span>山梨</span></div>
+        <div class="acr"><b>A</b><span>アラサー</span></div>
+        <div class="acr"><b>A</b><span>アクション</span></div>
+        <div class="acr"><b>A</b><span>アイデア</span></div>
+        <div class="acr"><b>C</b><span>コンテスト</span></div>
+      </div>
+
+      <dl class="sched">
+        <div class="row">
+          <dt>募集期間<span class="yr">2026</span></dt>
+          <dd>9.1火 → 9.30水</dd>
+        </div>
+        <div class="row">
+          <dt>採択者決定<span class="yr">2026</span></dt>
+          <dd>10月下旬</dd>
+        </div>
+      </dl>
+
+      <a class="cta" href="https://forms.gle/VYF6okc9epGaPC1D6" target="_blank" rel="noopener noreferrer">
+        エントリーはこちら<span class="sr">（外部サイト・新しいタブで開きます）</span><span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </aside>
+  </section>
+
+  <section id="about">
+    <h2 class="eyebrow">ABOUT</h2>
+    <div class="card">
+    <p class="intro">本コンテストは山梨県内のアラサーが描く挑戦を発掘するプロジェクトです。山梨のアラサー人材の爆発を目的として、これからの山梨を担うアラサー世代に焦点を当てました。これまで眠らせてきたやってみたいことや、時間やお金を理由にできなかった挑戦を教えてください！</p>
+    </div>
+  </section>
+
+  <section id="why">
+    <h2 class="eyebrow">WHY</h2>
+    <div class="tabs" role="group" aria-label="このコンテストの考え方">
+      <button class="tab" type="button" id="tb-omoi" aria-expanded="false" aria-controls="p-omoi">思い</button>
+      <button class="tab" type="button" id="tb-days" aria-expanded="true" aria-controls="p-days">なんで３０日？</button>
+      <button class="tab" type="button" id="tb-yen" aria-expanded="false" aria-controls="p-yen">なんで３０万？</button>
+    </div>
+
+    <div class="panel" id="p-omoi" role="region" aria-labelledby="tb-omoi">
+      <div class="panel-inner card">
+        <h3>思い</h3>
+        <p><span>応募対象は、25歳から34歳までの方です。</span><span>この年齢は社会経験を積み、自分で考え、行動し、人との関係を築く力が育ち始める一方で、人生の方向を改めて選び直せる余白も残されています。</span></p>
+        <p>仕事。暮らし。結婚。</p>
+        <p><span>「このままでいいのだろうか。」</span><span>「この先、どう生きていきたいのだろう。」</span></p>
+        <p>そんな問いと向き合い、自分の人生を見つめ直す人が多い時期なのではないか。</p>
+        <p class="quiet">この時期は、大きな成果を出しやすいという意味ではなく、自分の人生を見つめ、次の一歩を選びやすい時期だと考えました。</p>
+      </div>
+    </div>
+
+    <div class="panel open" id="p-days" role="region" aria-labelledby="tb-days">
+      <div class="panel-inner card">
+        <h3>なんで３０日？</h3>
+        <p><span>30日は、人生を完成させる期間ではありません。</span><span>人生を変えることを求める期間でもありません。</span><span>一度立ち止まり、自分の現在地を確かめ、実際に動いてみるための期間です。</span><span>短すぎず、長すぎない30日間の中で、</span></p>
+        <ul class="words"><li>考える。</li><li>選ぶ。</li><li>出会う。</li><li>動く。</li><li>迷う。</li><li>持ち帰る。</li></ul>
+        <p>その経験が、その後の人生を考えるための素材になるからです。</p>
+      </div>
+    </div>
+
+    <div class="panel" id="p-yen" role="region" aria-labelledby="tb-yen">
+      <div class="panel-inner card">
+        <h3>なんで３０万？</h3>
+        <p><span>1万円では、行ける場所が限られる。</span><span>5万円なら、少し背伸びができる。</span><span>30万円あれば、人生の景色を変えに行ける。</span></p>
+        <ul class="deeds"><li>会いたい人に会いに行く。</li><li>知らない土地を歩く。</li><li>新しい価値観に触れる。</li><li>挑戦してみたかったことを、形にする。</li></ul>
+        <p><span>「もしも」を、冒険へ変えられるだけの資源を託したい。</span><span>だから、30万円という金額にしました。</span></p>
+        <p>30万円は「やってみたい」を、「やってみた」に変える金額なんです。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="guidelines">
+    <p class="eyebrow">GUIDELINES</p>
+    <h2>募集要項</h2>
+
+    <div class="block card">
+      <h3>こんなアクションが対象</h3>
+      <p>起業でなくてかまいません。立ち止まること、向き合うこと、選び直すことも、このコンテストの対象です。</p>
+      <ul class="plain">
+        <li>あの国にいる友人に会いに行って１ヶ月暮らしてみる</li>
+        <li>日本を車で一周してみる</li>
+        <li>短期のスクールで大人の学び直しに挑戦</li>
+        <li>チャレンジショップで自分のカフェをオープン</li>
+        <li>自作した〇〇を販売してみる</li>
+      </ul>
+      <p class="note">一覧に当てはまらない「もしも」も対象です。審査基準を読んで、あなたの30日を書いてください。</p>
+    </div>
+
+    <div class="block card">
+      <div class="h3row">
+        <h3>エントリー資格</h3>
+        <span class="age">25〜34歳</span>
+      </div>
+      <p>次のいずれかに該当する、25歳から34歳までの個人</p>
+      <ul class="plain">
+        <li>・山梨県で暮らしている人</li>
+        <li>・山梨で働いている人</li>
+        <li>・山梨県出身の人</li>
+        <li>・山梨県と新たに関わりたい人</li>
+      </ul>
+    </div>
+
+    <div class="block card">
+      <h3>審査基準</h3>
+      <ol class="numbered">
+        <li>本人にとって切実な「もしも」であるか</li>
+        <li>30日間という期間を活かせるか</li>
+        <li>人との出会いや越境が含まれているか</li>
+        <li>本人が自ら選び、動こうとしているか</li>
+        <li>経験を持ち帰り、自分の言葉で伝えられるか</li>
+        <li>寄付者が自分を重ね、応援したくなる物語があるか</li>
+        <li>安全かつ実現可能な計画であるか</li>
+      </ol>
+    </div>
+
+    <div class="block card">
+      <h3>選考後の流れ</h3>
+      <ul class="flow">
+        <li>一次審査　書類選考</li>
+        <li>二次審査　プレゼンテーション・面談</li>
+      </ul>
+    </div>
+
+    <div class="block card">
+      <h3>エントリー方法</h3>
+      <p>フォームからエントリー</p>
+      <a class="cta" href="https://forms.gle/VYF6okc9epGaPC1D6" target="_blank" rel="noopener noreferrer">
+        エントリーはこちら<span class="sr">（外部サイト・新しいタブで開きます）</span><span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="foot-grid">
+    <div>
+      <p class="foot-h">Follow US</p>
+      <p class="foot-label">財団のSNS</p>
+      <p class="foot-val"><a href="https://www.instagram.com/yamanashimoshimo/" target="_blank" rel="noopener noreferrer">Instagram　@yamanashimoshimo<span class="sr">（外部サイト・新しいタブで開きます）</span></a></p>
+    </div>
+    <div>
+      <p class="foot-label">問い合わせ先</p>
+      <p class="foot-val"><a href="mailto:info@yamanashifund.org">info@yamanashifund.org</a></p>
+    </div>
+  </div>
+  <p class="foot-org">アラサー基金（山梨）</p>
+</footer>
+
+<!-- 常時右下のエントリー導線（I-15）。DOM の最後に置き、タブ順の最後にする -->
+<a class="cta cta-fix" href="https://forms.gle/VYF6okc9epGaPC1D6" target="_blank" rel="noopener noreferrer">
+  エントリーはこちら<span class="sr">（外部サイト・新しいタブで開きます）</span><span class="arrow" aria-hidden="true">→</span>
+</a>
+
+</div>
+
+<script>
+(function () {
+  var box = document.querySelector('.tabs');
+  var tabs = [].slice.call(document.querySelectorAll('.tab'));
+  if (!box || !tabs.length) return;               // JS が無ければ全章ひらいたまま
+  var wrap = box.closest('section') || document;
+  wrap.classList.add('js-on');                    // ここから畳む役をCSSへ渡す
+
+  function panelOf(btn) { return document.getElementById(btn.getAttribute('aria-controls')); }
+
+  // 見えている章と読み上げの状態を1箇所から作る。
+  // aria-expanded を唯一の真とし、.open / aria-hidden / inert をそこから導く
+  function apply() {
+    tabs.forEach(function (b) {
+      var open = b.getAttribute('aria-expanded') === 'true';
+      var p = panelOf(b);
+      if (!p) return;
+      p.classList.toggle('open', open);
+      // 畳んだ章は読み上げからも外す（画面と読み上げの食い違いを作らない）
+      if (open) { p.removeAttribute('aria-hidden'); p.removeAttribute('inert'); }
+      else { p.setAttribute('aria-hidden', 'true'); p.setAttribute('inert', ''); }
+    });
+  }
+
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var openNow = btn.getAttribute('aria-expanded') === 'true';
+      tabs.forEach(function (b) { b.setAttribute('aria-expanded', 'false'); });
+      if (!openNow) btn.setAttribute('aria-expanded', 'true');
+      apply();
+    });
+  });
+
+  apply();   // 初期状態も同じ経路で作る（属性とクラスを二重に手書きしない）
+})();
+
+// 右下の追従CTA（I-15）。ヒーローの CTA が画面から出たら現れる。
+// **IntersectionObserver を使わない。** 埋め込み描画やプレビュー環境でコールバックが
+// 一度も呼ばれず、隠れたまま固まることがある（CLAUDE.md「既知の罠」）。
+// ここは申し込み導線なので、観測が死んだら「出したまま」に倒れる作りにする。
+(function () {
+  var fix = document.querySelector('.cta-fix');
+  var heroCta = document.querySelector('.rail .cta');
+  if (!fix || !heroCta) return;              // 片方でも無ければ出したまま
+
+  var queued = false;
+  function update() {
+    queued = false;
+    // ヒーローの CTA が少しでも画面に残っているあいだは、同じボタンを2つ並べない
+    var r = heroCta.getBoundingClientRect();
+    var visible = r.bottom > 0 && r.top < (window.innerHeight || 0);
+    fix.classList.toggle('is-away', visible);
+    if (visible) { fix.setAttribute('inert', ''); fix.setAttribute('aria-hidden', 'true'); }
+    else { fix.removeAttribute('inert'); fix.removeAttribute('aria-hidden'); }
+  }
+  function onScroll() {
+    if (queued) return;                      // 1フレームに1回だけ測る
+    queued = true;
+    requestAnimationFrame(update);
+  }
+
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll, { passive: true });
+  update();                                  // 読み込み直後の位置でも同じ判定を通す
+})();
+</script>
+</body>
+</html>
