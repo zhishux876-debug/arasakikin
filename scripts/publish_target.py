@@ -127,6 +127,45 @@ def write_headers(out: Path, html: str, noindex: bool) -> None:
     (out / "_headers").write_text("\n".join(lines), encoding="utf-8")
 
 
+def write_htaccess(out: Path, html: str, noindex: bool) -> None:
+    """Apache（エックスサーバー等）向けの .htaccess を書く。
+
+    **GitHub Pages と違い、ここではヘッダが本当に効く。** 同じ内容を _headers と
+    二重に手書きしない（食い違うため）。CSP は配信する実物から計算した同じ値を使う。
+
+    すべて `<IfModule mod_headers.c>` で包む。**モジュールが無い環境では 500 を出さず、
+    ただ効かないだけ**にするため（配信先を替えたときにサイトごと落とさない）。
+    """
+    lines = [
+        "# 自動生成: scripts/publish_target.py --apache",
+        "# **手で書き換えない。** 工房側（DESIGN.md / index.html）を直して作り直す。",
+        "",
+        "<IfModule mod_headers.c>",
+    ]
+    if noindex:
+        lines.append("  # 施主承認前。DESIGN.md の status に「承認済」が入るまで付く")
+        lines.append('  Header set X-Robots-Tag "noindex, nofollow"')
+    lines += [
+        '  Header set X-Content-Type-Options "nosniff"',
+        '  Header set X-Frame-Options "DENY"',
+        '  Header set Referrer-Policy "strict-origin-when-cross-origin"',
+        '  Header set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"',
+        f'  Header set Content-Security-Policy "{csp_for(html)}"',
+        "",
+        '  <FilesMatch "[.]html$">',
+        '    Header set Cache-Control "public, max-age=0, must-revalidate"',
+        "  </FilesMatch>",
+        '  <FilesMatch "[.](webp|png|jpe?g|svg|woff2?)$">',
+        '    Header set Cache-Control "public, max-age=31536000, immutable"',
+        "  </FilesMatch>",
+        "</IfModule>",
+        "",
+        "ErrorDocument 404 /404.html",
+        "",
+    ]
+    (out / ".htaccess").write_text("\n".join(lines), encoding="utf-8")
+
+
 # GitHub Pages の A レコード（apex 用に公開されている固定IP）。
 # サブドメインは通常 <account>.github.io への CNAME で、解決すると同じIPに落ちる
 GITHUB_PAGES_IPS = {"185.199.108.153", "185.199.109.153", "185.199.110.153", "185.199.111.153"}
@@ -167,7 +206,7 @@ def emit_cname(root: Path, out: Path) -> None:
               f"      両方のURLで見られなくなる。DNS を切り替えてから push し直すこと")
 
 
-def build(src: Path, out: Path, meta: dict[str, str]) -> None:
+def build(src: Path, out: Path, meta: dict[str, str], apache: bool = False) -> None:
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
@@ -181,7 +220,9 @@ def build(src: Path, out: Path, meta: dict[str, str]) -> None:
     for name in PUBLISH_DIRS:
         d = src / name
         if d.is_dir():
-            shutil.copytree(d, out / name)
+            # MANIFEST.json は**制作の記録**（寸法・輝度・実測メモ）。配信先の公開領域に置くと
+            # 誰でも読める。配るのは画像そのものだけにする
+            shutil.copytree(d, out / name, ignore=shutil.ignore_patterns("MANIFEST.json"))
             copied.append(name + "/")
 
     if not (out / "index.html").exists():
@@ -195,15 +236,19 @@ def build(src: Path, out: Path, meta: dict[str, str]) -> None:
     # 施主が承認するまでは検索結果に出さない。承認は DESIGN.md の status に書かれる
     approved = "承認済" in meta.get("status", "")
     noindex = not approved
-    write_headers(out, html, noindex)
+    if apache:
+        write_htaccess(out, html, noindex)
+    else:
+        write_headers(out, html, noindex)
     if noindex and not (out / "robots.txt").exists():
         # ヘッダを設定できない配信先（GitHub Pages）でも、これだけは効く
         (out / "robots.txt").write_text("User-agent: *\nDisallow: /\n", encoding="utf-8")
         copied.append("robots.txt（下書き用に生成）")
 
-    emit_cname(Path(__file__).resolve().parent.parent, out)
+    if not apache:   # 独自ドメインは GitHub Pages のときだけの話
+        emit_cname(Path(__file__).resolve().parent.parent, out)
 
-    print(f"\n配信物を {out} に組み立てた: " + ", ".join(copied) + ", _headers")
+    print(f"\n配信物を {out} に組み立てた: " + ", ".join(copied) + (", .htaccess" if apache else ", _headers"))
     print(f"  noindex: {'あり（status が承認済みでない）' if noindex else 'なし（施主承認済み）'}")
     print(f"  CSP    : {csp_for(html)[:90]}…")
 
@@ -212,6 +257,8 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="公開する案を解決して配信物を組み立てる")
     ap.add_argument("--root", default=".", help="リポジトリの根（既定: カレント）")
     ap.add_argument("--build", metavar="DIR", help="配信物を組み立てる先。省略すると解決だけ")
+    ap.add_argument("--apache", action="store_true",
+                    help="Apache（エックスサーバー等）へ置く形にする。_headers ではなく .htaccess を書く")
     ap.add_argument("--github-output", metavar="FILE",
                     help="解決結果（target / brief）を GitHub Actions の出力ファイルへ書く")
     args = ap.parse_args()
@@ -231,7 +278,7 @@ def main() -> None:
             fh.write(f"brief={brief if brief_ok else ''}\n")
 
     if args.build:
-        build(target, Path(args.build), meta)
+        build(target, Path(args.build), meta, apache=args.apache)
 
 
 if __name__ == "__main__":

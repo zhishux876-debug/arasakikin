@@ -98,6 +98,16 @@ def static_checks(path):
         head = src[max(0, m.start() - 60):m.start()]
         if re.search(r"<a\b[^>]*$", head, re.I):
             continue
+        # rel="canonical" / "alternate" の <link> も除外。
+        # **これは読み込まれる資源ではなく、頁の住所を宣言するメタ情報**で、
+        # 相対パスでは意味を成さない（絶対URLでなければならない）。
+        # 除外しないと、正しく canonical を書いた頁ほど「外部依存あり」で落ちる
+        lt = src.rfind("<", 0, m.start())
+        gt = src.find(">", m.start())
+        tag = src[lt:gt + 1] if lt != -1 and gt != -1 else ""
+        if re.match(r"<link\b", tag, re.I) and re.search(
+                r"""rel\s*=\s*["'](?:canonical|alternate|me)["']""", tag, re.I):
+            continue
         urls.append(u)
     disallowed = [u for u in urls if not any(h in u for h in ALLOWED_HOSTS)]
     out["外部リソース参照"] = (

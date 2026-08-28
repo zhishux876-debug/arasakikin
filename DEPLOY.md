@@ -153,51 +153,70 @@ Settings → Pages → Source を「GitHub Actions」にして、失敗した実
 
 **逆に言うと、うっかり push しても検索結果には出ない。** 出すのは明示的な操作だけ。
 
-## 独自ドメイン around30.yamanashifund.org（2026-08-28 施主の指示）
+## 本番の配信先は around30.yamanashifund.org（エックスサーバー・2026-08-28 決定）
 
-`yamanashifund.org` の下にぶら下げる。**順序を間違えるとサイトが落ちる。**
+施主の指示「以前実施した yamanashifund への導入と同じ形式で行いたい」。
+本体 `yamanashifund.org` と同じ形式＝**静的ファイルをサーバーへ置く**。
 
-先に `CNAME` を配ると、Pages が `github.io` から独自ドメインへ転送を始める。
-そのとき DNS がまだ別のサーバーを指していると、**新旧どちらのURLでも見られなくなる。**
-正しい順序は「DNS を切り替える → CNAME を配る」。
+調べたこと（2026-08-28）:
 
-`scripts/publish_target.py` はこの事故を機械で止める。リポジトリ直下の `CNAME` を読み、
-**そのドメインが GitHub Pages のIP（185.199.108〜111.153）に解決したときだけ**
-配信物へ入れる。向いていなければ警告を出して入れない（サイトは github.io のまま生き続ける）。
+| 調べた先 | 分かったこと |
+| :--- | :--- |
+| `around30.yamanashifund.org` | **すでに HTTPS で 200**。「エックスサーバー サーバー初期ページ」が出ている＝**サブドメインは作成済み・証明書も有効** |
+| `yamanashifund.org` | 素の静的HTML（外部依存は Google Fonts のみ）。正式名称は**一般財団法人山梨もしも財団** |
+| サーバー | Apache（`Server: nginx` は前段）。**`.htaccess` が効く** |
 
-### 手順
+**GitHub Pages の独自ドメイン（CNAME）は使わない。** DNS を GitHub へ向けると、
+いまサーバーで動いているサブドメインを奪うことになる。`CNAME` は削除した。
+`publish_target.py` の CNAME を配る仕組みは残してあるが、ファイルが無いので何もしない。
 
-1. **DNS にレコードを足す**（これは人間の作業。DNS 事業者の管理画面）
+### アップロードするもの
 
-   | 種別 | 名前 | 値 |
-   | :--- | :--- | :--- |
-   | `CNAME` | `around30`（＝ `around30.yamanashifund.org`） | `zhishux876-debug.github.io.` |
+```powershell
+.\.venv\Scripts\python.exe scripts\publish_target.py --build C:\Users\zhish\around30-upload --apache
+```
 
-   - 2026-08-28 時点で `around30.yamanashifund.org` は **202.226.37.40**（既存のサーバー）を向いている。
-     ワイルドカード（`*.yamanashifund.org`）が効いている可能性が高い。
-     **明示的な CNAME を足せばそちらが優先される**
-   - 反映を待つ（数分〜数時間）。`nslookup around30.yamanashifund.org` が
-     `185.199.10x.153` を返せば切り替わっている
+`C:\Users\zhish\around30-upload\` の**中身をそのまま**、エックスサーバーの
+`around30.yamanashifund.org` の公開領域（`.../around30.yamanashifund.org/public_html/`）へ置く。
+FTP でも、サーバーパネルのファイルマネージャでもよい。
 
-2. **同期して push する**
+```
+.htaccess                              ヘッダ（CSP・noindex・キャッシュ）と 404 の設定
+index.html                             応募ページ本体
+404.html
+robots.txt                             承認前は Disallow: /
+assets/logo-yamanashi-moshimo-200.webp
+assets/logo-yamanashi-moshimo-400.webp
+assets/logo-yamanashi-moshimo.png
+```
 
-   ```powershell
-   .\.venv\Scripts\python.exe scripts\sync_publish.py --push
-   ```
+- **初期ページ（`index.html` や `default_page.png` 等）を先に消す。** 残すと入れ替わらない
+- `.htaccess` は**ドットで始まるので FTP クライアントによっては見えない**。隠しファイルを表示する設定にする
+- **`MANIFEST.json` は配らない**（寸法・輝度・実測メモという制作の記録で、公開領域に置くと誰でも読める）。
+  `publish_target.py` が自動で外す
 
-   ログに「DNS は GitHub Pages を向いている → CNAME を入れた」と出れば入っている。
-   「向いていない」と出たら 1 がまだ反映されていない
+### GitHub Pages はどうするか
 
-3. **リポジトリの Settings → Pages → Custom domain** に `around30.yamanashifund.org` を入れる
+**残す。** 役割が違う。
 
-4. 証明書が発行されたら **Enforce HTTPS** にチェックを入れる
+| | 役割 |
+| :--- | :--- |
+| GitHub（`arasakikin`） | 検査つきの組み立て場・履歴・控え。push のたびに verify.py まで通る |
+| エックスサーバー（`around30`） | **本番。読者が来る場所** |
 
-### 切り替わったあとに直るもの
+同じ内容が2つのURLで出るので、`index.html` に
+`<link rel="canonical" href="https://around30.yamanashifund.org/">` と `og:url` を入れて
+**正はサーバー側だと名乗らせている**（`design_spec_lint` が消えていないか見る）。
 
-- `404.html` の「トップへ戻る」は `href="/"`。**独自ドメインでは正しく、
-  いまの `github.io/arasakikin/` では行き先が無い**（プロジェクトページはサブパスにあるため）。
-  ドメインが生きた時点で解消する
-- `og:url` / `og:image` を絶対URLで入れられるようになる（`briefs/yaaac.md` の TODO）
+### 更新のたびにやること
+
+1. 工房で直す
+2. `scripts\publish_target.py --build C:\Users\zhish\around30-upload --apache` で作り直す
+3. その中身をサーバーへ上書きアップロード
+4. （控えも合わせるなら）`scripts\sync_publish.py --push`
+
+**手でサーバー上のファイルを編集しない。** 次の作り直しで上書きされ、
+工房と食い違ったまま気づけなくなる。
 
 ## まだ決まっていないこと
 

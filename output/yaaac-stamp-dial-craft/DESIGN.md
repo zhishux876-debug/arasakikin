@@ -3,12 +3,14 @@
 **この文書が意匠の正本です。** `index.html` と食い違ったら、**直すのは実装の側**。
 意匠を変えたいときは、先にこの文書を書き換え、`design_spec_lint.py` を通してから実装する。
 
-- revision: 10
+- revision: 11
 - status: 施主承認待ち（公開判断は人間）
 - owner: lp-factory-12（このディレクトリの所有者。触る前に確認する）
 - updated: 2026-08-28
 - brief: briefs/yaaac.md
 - canonical: yes   ← 2026-08-28 施主が公開する案として選定（山吹案は no）
+- 配信先（正）: **https://around30.yamanashifund.org/**（エックスサーバー・静的ファイル）。
+  `<link rel="canonical">` と `og:url` でこのURLを名乗る。GitHub Pages は検査つきの組み立て場と控えとして残す
 - 対象: `output/yaaac-stamp-dial-craft/index.html` ＋ `assets/`（主催ロゴ1点。**画像を持つので単一HTMLでは完結しない**。配置の前に `assets/MANIFEST.json` を読む）
 - 文言の正本: `briefs/yaaac.md`（確定コピー60件。`verify.py --fixed` で機械照合）
 - 方向: `design-directions.md` の `typographic` × `chic-muted`（クラフト紙の地に文字組み）
@@ -261,6 +263,8 @@ require-selector .cta
 # 天とフッターの2か所。class="logo" の実形で数える
 require-count class="logo" 2
 require-count https://yamanashifund.org/ 2
+# 配信URLを1つ名乗る（同じ頁が2つのURLで出ても、正はこちらだと示す）
+require-raw rel="canonical" href="https://around30.yamanashifund.org/"
 # I-16 の「左上に固定値で留める」は目視（--gut を使っていないことの機械照合はしない）
 forbid-regex 河原部社
 forbid-regex アラサー基金
