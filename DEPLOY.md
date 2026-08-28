@@ -153,7 +153,7 @@ Settings → Pages → Source を「GitHub Actions」にして、失敗した実
 
 **逆に言うと、うっかり push しても検索結果には出ない。** 出すのは明示的な操作だけ。
 
-## 本番の配信先は around30.yamanashifund.org（エックスサーバー・2026-08-28 決定）
+## 本番の配信先は around30.yamanashifund.org（DNS を GitHub Pages へ向ける・2026-08-28 決定）
 
 施主の指示「以前実施した yamanashifund への導入と同じ形式で行いたい」。
 本体 `yamanashifund.org` と同じ形式＝**静的ファイルをサーバーへ置く**。
@@ -166,11 +166,48 @@ Settings → Pages → Source を「GitHub Actions」にして、失敗した実
 | `yamanashifund.org` | 素の静的HTML（外部依存は Google Fonts のみ）。正式名称は**一般財団法人山梨もしも財団** |
 | サーバー | Apache（`Server: nginx` は前段）。**`.htaccess` が効く** |
 
-**GitHub Pages の独自ドメイン（CNAME）は使わない。** DNS を GitHub へ向けると、
-いまサーバーで動いているサブドメインを奪うことになる。`CNAME` は削除した。
-`publish_target.py` の CNAME を配る仕組みは残してあるが、ファイルが無いので何もしない。
+### 配信の経路（施主の判断 2026-08-28「かこ DNS で送信しているから同じ処理を行って」）
 
-### アップロードするもの
+**DNS を GitHub Pages へ向ける。** 過去の導入と同じやり方に揃える。
+`around30` はいまエックスサーバーの初期ページを出しているが、DNS を切り替えれば
+そのサブドメインは GitHub Pages が受ける（サーバー側の中身は使われなくなる）。
+
+**順序を間違えるとサイトが落ちる。** 先に `CNAME` を配ると Pages が `github.io` から
+独自ドメインへ転送を始め、DNS がまだエックスサーバーを指していると
+**新旧どちらのURLでも見られなくなる。** 正しい順序は「DNS を切り替える → CNAME を配る」。
+
+`scripts/publish_target.py` がこれを機械で止める。リポジトリ直下の `CNAME` を読み、
+**そのドメインが GitHub Pages のIP（185.199.108〜111.153）に解決したときだけ**配信物へ入れる。
+向いていなければ警告して入れない（サイトは `github.io` のまま生き続ける）。
+
+#### 手順
+
+1. **DNS にレコードを足す**（人間の作業。DNS 事業者の管理画面）
+
+   | 種別 | 名前 | 値 |
+   | :--- | :--- | :--- |
+   | `CNAME` | `around30`（＝ `around30.yamanashifund.org`） | `zhishux876-debug.github.io.` |
+
+   2026-08-28 時点で `around30` に CNAME レコードは無く、**202.226.37.40**（エックスサーバー）に
+   解決している。ワイルドカードか A レコードが効いている。明示的な `CNAME` を足せば優先される。
+
+2. `nslookup around30.yamanashifund.org` が `185.199.10x.153` を返すのを待つ
+
+3. `scripts\sync_publish.py --push`
+   → ログに「DNS は GitHub Pages を向いている → CNAME を入れた」と出れば入っている
+
+4. リポジトリの **Settings → Pages → Custom domain** に `around30.yamanashifund.org` を入れる
+
+5. 証明書が出たら **Enforce HTTPS**
+
+**Pages はレスポンスヘッダを設定できない**ので、この経路では CSP と `X-Frame-Options` は
+掛からない（`noindex` は `robots.txt` が受け持つので効く）。
+ヘッダまで要るなら、下の「サーバーへ直接置く」に切り替える。
+
+### 代替: サーバーへ直接置く（ヘッダが要るとき）
+
+エックスサーバーは Apache なので `.htaccess` が効き、**CSP まで掛けられる。**
+DNS を切り替えない場合はこちら。
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\publish_target.py --build C:\Users\zhish\around30-upload --apache
