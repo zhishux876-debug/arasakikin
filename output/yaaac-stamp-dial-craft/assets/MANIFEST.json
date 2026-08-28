@@ -1,0 +1,51 @@
+[
+  {
+    "slug": "logo-yamanashi-moshimo",
+    "source": "logo-yamanashi-moshimo.png",
+    "original": {
+      "width": 1380,
+      "height": 369,
+      "bytes": 313134
+    },
+    "aspect": 3.74,
+    "orientation": "横長",
+    "brightness": 0.249,
+    "brightness_label": "暗い",
+    "dominant_colors": [
+      {
+        "hex": "#000000",
+        "share": 0.408
+      },
+      {
+        "hex": "#47c9cf",
+        "share": 0.258
+      },
+      {
+        "hex": "#0969a0",
+        "share": 0.223
+      },
+      {
+        "hex": "#021625",
+        "share": 0.111
+      }
+    ],
+    "fallback": "logo-yamanashi-moshimo.jpg",
+    "variants": [
+      {
+        "width": 200,
+        "height": 53,
+        "file": "logo-yamanashi-moshimo-200.webp",
+        "bytes": 8260
+      },
+      {
+        "width": 400,
+        "height": 107,
+        "file": "logo-yamanashi-moshimo-400.webp",
+        "bytes": 18922
+      }
+    ],
+    "alt": "山梨もしも財団",
+    "description": "「山梨」＋手書き風の「もしも」＋「財団」の横組みロゴ。「もしも」は青から緑へのグラデーション、「山梨」「財団」は濃い青の角丸ゴシック。背景は透過。1380x369（比 3.74）",
+    "suggested_use": "主催表記。紙面の天（.topmark）とフッターに置く。**クラフト紙の地に直に載せると、緑寄りの部分がほぼ同化して読めない**ため、白い札（角丸・墨の細罫）の上に置く。jpg フォールバックの地が白なので札の色と揃う"
+  }
+]

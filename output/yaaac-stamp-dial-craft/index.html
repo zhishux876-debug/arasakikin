@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>YAAAC｜山梨アラサーアクションアイデアコンテスト</title>
-<meta name="description" content="アラサーってちょうどいいスタートライン。山梨アラサーアクションアイデアコンテスト（YAAAC）。25〜34歳が対象。募集期間 9.1火 → 9.30水、採択者決定 10月下旬。主催はアラサー基金。">
+<meta name="description" content="アラサーってちょうどいいスタートライン。山梨アラサーアクションアイデアコンテスト（YAAAC）。25〜34歳が対象。募集期間 9.1火 → 9.30水、採択者決定 10月下旬。主催は山梨もしも財団。">
 <meta name="theme-color" content="#F0CC9C">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">
@@ -56,9 +56,14 @@ svg{max-width:100%}
   padding:clamp(14px,2vw,24px) var(--gut) 0;
   font-family:var(--maru);font-weight:700;color:var(--ink);
 }
-.topmark .org{font-size:11.5px;letter-spacing:.3em;line-height:1.95}
-.topmark .org span{display:block}
-.topmark .jp{font-size:14px;letter-spacing:.2em}
+/* 主催ロゴ（I-14）。**クラフト紙の地に直に載せない。**
+   ロゴの「もしも」は青→緑のグラデーションで、緑寄りの側が地（#F0CC9C）とほぼ同化する。
+   白い札に載せて分離する。jpg フォールバックの地も白なので、札の色と揃う */
+.logo{display:block;background:#fff;border:1.5px solid rgba(0,64,79,.55);
+  border-radius:10px;padding:8px 12px}
+.logo img{display:block;width:100%;height:auto}
+.topmark .logo{width:132px}
+footer .logo{width:176px;margin:26px 0 0}
 
 /* ---------- ヒーロー（1画面の構成。左に版と見出し／右に日程） ---------- */
 .hero{max-width:1160px;margin:0 auto;padding:clamp(2px,.6vw,8px) var(--gut) 0;
@@ -232,7 +237,6 @@ footer{max-width:900px;margin:clamp(46px,8vw,84px) auto 0;
 .foot-val a{color:var(--ink);text-decoration:none;border-bottom:2px solid rgba(0,64,79,.35);
   display:inline-block;min-height:44px;line-height:44px}
 .foot-val a:hover{border-bottom-color:var(--ink)}
-.foot-org{font-family:var(--maru);font-weight:700;font-size:13px;letter-spacing:.1em;color:var(--ink-soft);margin:26px 0 0}
 
 @media(max-width:700px){
         }
@@ -255,8 +259,10 @@ footer{max-width:900px;margin:clamp(46px,8vw,84px) auto 0;
 <div class="sheet">
 
 <header class="topmark">
-  <span class="org"><span>アラサー基金</span></span>
-  <span class="jp">山梨</span>
+  <picture class="logo">
+    <source type="image/webp" srcset="assets/logo-yamanashi-moshimo-200.webp 200w, assets/logo-yamanashi-moshimo-400.webp 400w" sizes="132px">
+    <img src="assets/logo-yamanashi-moshimo.jpg" width="1380" height="369" alt="山梨もしも財団" loading="eager" fetchpriority="high" decoding="async">
+  </picture>
 </header>
 
 <main>
@@ -305,14 +311,14 @@ footer{max-width:900px;margin:clamp(46px,8vw,84px) auto 0;
   <section id="why">
     <h2 class="eyebrow">WHY</h2>
     <div class="tabs" role="group" aria-label="このコンテストの考え方">
-      <button class="tab" type="button" id="tb-omoi" aria-expanded="false" aria-controls="p-omoi">思い</button>
+      <button class="tab" type="button" id="tb-omoi" aria-expanded="false" aria-controls="p-omoi">なんでアラサー？</button>
       <button class="tab" type="button" id="tb-days" aria-expanded="true" aria-controls="p-days">なんで３０日？</button>
       <button class="tab" type="button" id="tb-yen" aria-expanded="false" aria-controls="p-yen">なんで３０万？</button>
     </div>
 
     <div class="panel" id="p-omoi" role="region" aria-labelledby="tb-omoi">
       <div class="panel-inner card">
-        <h3>思い</h3>
+        <h3>なんでアラサー？</h3>
         <p><span>応募対象は、25歳から34歳までの方です。</span><span>この年齢は社会経験を積み、自分で考え、行動し、人との関係を築く力が育ち始める一方で、人生の方向を改めて選び直せる余白も残されています。</span></p>
         <p>仕事。暮らし。結婚。</p>
         <p><span>「このままでいいのだろうか。」</span><span>「この先、どう生きていきたいのだろう。」</span></p>
@@ -415,7 +421,10 @@ footer{max-width:900px;margin:clamp(46px,8vw,84px) auto 0;
       <p class="foot-val"><a href="mailto:info@yamanashifund.org">info@yamanashifund.org</a></p>
     </div>
   </div>
-  <p class="foot-org">アラサー基金（山梨）</p>
+  <picture class="logo">
+    <source type="image/webp" srcset="assets/logo-yamanashi-moshimo-200.webp 200w, assets/logo-yamanashi-moshimo-400.webp 400w" sizes="176px">
+    <img src="assets/logo-yamanashi-moshimo.jpg" width="1380" height="369" alt="山梨もしも財団" loading="lazy" decoding="async">
+  </picture>
 </footer>
 
 <!-- 常時右下のエントリー導線（I-15）。DOM の最後に置き、タブ順の最後にする -->
