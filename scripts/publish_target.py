@@ -127,6 +127,46 @@ def write_headers(out: Path, html: str, noindex: bool) -> None:
     (out / "_headers").write_text("\n".join(lines), encoding="utf-8")
 
 
+# GitHub Pages の A レコード（apex 用に公開されている固定IP）。
+# サブドメインは通常 <account>.github.io への CNAME で、解決すると同じIPに落ちる
+GITHUB_PAGES_IPS = {"185.199.108.153", "185.199.109.153", "185.199.110.153", "185.199.111.153"}
+
+
+def emit_cname(root: Path, out: Path) -> None:
+    """独自ドメイン（リポジトリ直下の CNAME）を配信物へ入れる。
+
+    **DNS が GitHub Pages を向いていないうちは入れない。**
+    先に CNAME を配ると、Pages が github.io から独自ドメインへリダイレクトを始め、
+    DNS がまだ別のサーバーを指していると**両方のURLで見られなくなる**。
+    順序は「DNS を切り替える → CNAME を配る」で、逆にすると落ちる。
+
+    IP の集合が将来変わったときは、CNAME を入れずに警告して終わる。
+    サイトは github.io のまま生き続ける（落とすより出し損ねる方が安全）。
+    """
+    src = root / "CNAME"
+    if not src.exists():
+        return
+    domain = src.read_text(encoding="utf-8").strip().splitlines()[0].strip()
+    if not domain:
+        return
+
+    import socket
+    try:
+        addrs = {ai[4][0] for ai in socket.getaddrinfo(domain, None, socket.AF_INET)}
+    except OSError as e:
+        print(f"  独自ドメイン {domain}: 名前が引けない（{e}）。CNAME を入れずに配信する")
+        return
+
+    if addrs & GITHUB_PAGES_IPS:
+        (out / "CNAME").write_text(domain + "\n", encoding="utf-8")
+        print(f"  独自ドメイン {domain}: DNS は GitHub Pages を向いている → CNAME を入れた")
+    else:
+        print(f"  独自ドメイン {domain}: **DNS がまだ GitHub Pages を向いていない**"
+              f"（{', '.join(sorted(addrs))}）。\n"
+              f"      CNAME を入れずに配信する。先に入れると github.io からの転送が始まり、\n"
+              f"      両方のURLで見られなくなる。DNS を切り替えてから push し直すこと")
+
+
 def build(src: Path, out: Path, meta: dict[str, str]) -> None:
     if out.exists():
         shutil.rmtree(out)
@@ -160,6 +200,8 @@ def build(src: Path, out: Path, meta: dict[str, str]) -> None:
         # ヘッダを設定できない配信先（GitHub Pages）でも、これだけは効く
         (out / "robots.txt").write_text("User-agent: *\nDisallow: /\n", encoding="utf-8")
         copied.append("robots.txt（下書き用に生成）")
+
+    emit_cname(Path(__file__).resolve().parent.parent, out)
 
     print(f"\n配信物を {out} に組み立てた: " + ", ".join(copied) + ", _headers")
     print(f"  noindex: {'あり（status が承認済みでない）' if noindex else 'なし（施主承認済み）'}")

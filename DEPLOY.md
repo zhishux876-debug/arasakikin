@@ -153,6 +153,52 @@ Settings → Pages → Source を「GitHub Actions」にして、失敗した実
 
 **逆に言うと、うっかり push しても検索結果には出ない。** 出すのは明示的な操作だけ。
 
+## 独自ドメイン around30.yamanashifund.org（2026-08-28 施主の指示）
+
+`yamanashifund.org` の下にぶら下げる。**順序を間違えるとサイトが落ちる。**
+
+先に `CNAME` を配ると、Pages が `github.io` から独自ドメインへ転送を始める。
+そのとき DNS がまだ別のサーバーを指していると、**新旧どちらのURLでも見られなくなる。**
+正しい順序は「DNS を切り替える → CNAME を配る」。
+
+`scripts/publish_target.py` はこの事故を機械で止める。リポジトリ直下の `CNAME` を読み、
+**そのドメインが GitHub Pages のIP（185.199.108〜111.153）に解決したときだけ**
+配信物へ入れる。向いていなければ警告を出して入れない（サイトは github.io のまま生き続ける）。
+
+### 手順
+
+1. **DNS にレコードを足す**（これは人間の作業。DNS 事業者の管理画面）
+
+   | 種別 | 名前 | 値 |
+   | :--- | :--- | :--- |
+   | `CNAME` | `around30`（＝ `around30.yamanashifund.org`） | `zhishux876-debug.github.io.` |
+
+   - 2026-08-28 時点で `around30.yamanashifund.org` は **202.226.37.40**（既存のサーバー）を向いている。
+     ワイルドカード（`*.yamanashifund.org`）が効いている可能性が高い。
+     **明示的な CNAME を足せばそちらが優先される**
+   - 反映を待つ（数分〜数時間）。`nslookup around30.yamanashifund.org` が
+     `185.199.10x.153` を返せば切り替わっている
+
+2. **同期して push する**
+
+   ```powershell
+   .\.venv\Scripts\python.exe scripts\sync_publish.py --push
+   ```
+
+   ログに「DNS は GitHub Pages を向いている → CNAME を入れた」と出れば入っている。
+   「向いていない」と出たら 1 がまだ反映されていない
+
+3. **リポジトリの Settings → Pages → Custom domain** に `around30.yamanashifund.org` を入れる
+
+4. 証明書が発行されたら **Enforce HTTPS** にチェックを入れる
+
+### 切り替わったあとに直るもの
+
+- `404.html` の「トップへ戻る」は `href="/"`。**独自ドメインでは正しく、
+  いまの `github.io/arasakikin/` では行き先が無い**（プロジェクトページはサブパスにあるため）。
+  ドメインが生きた時点で解消する
+- `og:url` / `og:image` を絶対URLで入れられるようになる（`briefs/yaaac.md` の TODO）
+
 ## まだ決まっていないこと
 
 - 独自ドメインを使うか（使うなら `CNAME` を配信リポジトリの直下に置く）
